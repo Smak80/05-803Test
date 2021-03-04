@@ -14,6 +14,7 @@ class GraphPainter(
                 calcVertexPositions()
             }
         }
+
     var vertexSize = 30
         set(value){
             if (value >=10 && value <= 100) {
@@ -30,17 +31,27 @@ class GraphPainter(
         calcVertexPositions()
     }
 
+    private val minSz: Int
+        get() = min(width, height) - vertexSize - thickness
+
+    private val rect: Rectangle
+        get() = Rectangle((width - minSz)/2, (height-minSz)/2, minSz, minSz)
+
+    private val radius: Int
+        get() = minSz / 2
+
+    private val center: Point
+        get() = Point(rect.x + radius, rect.y + radius)
+
+    private val phi: Double
+        get() = 2 * PI / graph.size
+
     private var vertexPositions: MutableList<Point>? = null
 
     private fun calcVertexPositions(){
-        val minSz = min(width, height) - vertexSize - thickness
-        val rect = Rectangle((width - minSz)/2, (height-minSz)/2, minSz, minSz)
-        val radius = rect.width / 2
-        val center = Point(rect.x + radius, rect.y + radius)
-        val phi = 2 * PI / graph.size
         vertexPositions = MutableList<Point>(graph.size) { i ->
-            Point((center.x + radius * cos(i * phi - PI / 2)).toInt() ,
-                    (center.y + radius * sin(i * phi - PI / 2)).toInt()
+            Point((center.x + radius * cos(i * phi)).toInt() ,
+                    (center.y + radius * sin(i * phi)).toInt()
             )
         }
     }
@@ -51,31 +62,35 @@ class GraphPainter(
     }
 
     private fun paintVerticies(g: Graphics) {
-        vertexPositions?.forEach {
-            g.color = Color.WHITE
-            g.fillOval(it.x - vertexSize/2, it.y - vertexSize/2, vertexSize, vertexSize)
-            g.color = Color.BLUE
-            g.drawOval(it.x - vertexSize/2, it.y - vertexSize/2, vertexSize, vertexSize)
+        (g as Graphics2D).apply {
+            rotate(-PI / 2, center.x.toDouble(), center.y.toDouble())
+            vertexPositions?.forEach {
+                g.color = Color.WHITE
+                g.fillOval(it.x - vertexSize / 2, it.y - vertexSize / 2, vertexSize, vertexSize)
+                g.color = Color.BLUE
+                g.drawOval(it.x - vertexSize / 2, it.y - vertexSize / 2, vertexSize, vertexSize)
+            }
         }
     }
 
     private fun paintEdges(g: Graphics) {
+        (g as Graphics2D).apply {
+            rotate(-PI / 2, center.x.toDouble(), center.y.toDouble())
+            stroke = BasicStroke(
+                    thickness.toFloat(),
+                    BasicStroke.CAP_ROUND,
+                    BasicStroke.JOIN_ROUND)
+            setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            )
+        }
 
         graph.forEachIndexed { fromInd, from ->
             from.takeLast(graph.size - fromInd - 1)
                     .forEachIndexed { toInd, weight ->
                 if (weight > 1e-20) {
                     vertexPositions?.let { vPos ->
-                        (g as Graphics2D).apply {
-                            stroke = BasicStroke(
-                                    thickness.toFloat(),
-                                    BasicStroke.CAP_ROUND,
-                                    BasicStroke.JOIN_ROUND)
-                            setRenderingHint(
-                                    RenderingHints.KEY_ANTIALIASING,
-                                    RenderingHints.VALUE_ANTIALIAS_ON
-                            )
-                        }
                         val toI = toInd + fromInd + 1
                         g.drawLine(
                                 vPos[fromInd].x, vPos[fromInd].y,
@@ -85,7 +100,6 @@ class GraphPainter(
                 }
             }
         }
-
         /*for (i in 0 until graph.size - 1){
             for (j in i+1 until graph.size) {
                 if (graph[i][j]>1e-20){
