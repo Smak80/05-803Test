@@ -12,11 +12,11 @@ object Loader {
                     FileInputStream(filename), "UTF-8"
                 )
             )
-            while (br.readLine().apply{
+            while (br.readLine()?.apply{
                 res.add(split(';').map { it.toDouble() }.toMutableList())
                 } != null){}
         } catch (e: Exception){
-            println("Ошибка при чтении из файла")
+            println("Ошибка при чтении из файла: ${e.message}")
         }
         return res
     }
