@@ -1,7 +1,4 @@
-import java.awt.Color
-import java.awt.Graphics
-import java.awt.Point
-import java.awt.Rectangle
+import java.awt.*
 import kotlin.math.*
 
 class GraphPainter(
@@ -10,7 +7,7 @@ class GraphPainter(
 
     private var width = 1
     private var height = 1
-    private var lineSize = 1
+    var thickness = 1
         set(value) {
             if (value >=1 && value <= 30) {
                 field = value
@@ -36,7 +33,7 @@ class GraphPainter(
     private var vertexPositions: MutableList<Point>? = null
 
     private fun calcVertexPositions(){
-        val minSz = min(width, height) - vertexSize - lineSize
+        val minSz = min(width, height) - vertexSize - thickness
         val rect = Rectangle((width - minSz)/2, (height-minSz)/2, minSz, minSz)
         val radius = rect.width / 2
         val center = Point(rect.x + radius, rect.y + radius)
@@ -63,7 +60,33 @@ class GraphPainter(
     }
 
     private fun paintEdges(g: Graphics) {
-        for (i in 0 until graph.size - 1){
+
+        graph.forEachIndexed { fromInd, from ->
+            from.takeLast(graph.size - fromInd - 1)
+                    .forEachIndexed { toInd, weight ->
+                if (weight > 1e-20) {
+                    vertexPositions?.let { vPos ->
+                        (g as Graphics2D).apply {
+                            stroke = BasicStroke(
+                                    thickness.toFloat(),
+                                    BasicStroke.CAP_ROUND,
+                                    BasicStroke.JOIN_ROUND)
+                            setRenderingHint(
+                                    RenderingHints.KEY_ANTIALIASING,
+                                    RenderingHints.VALUE_ANTIALIAS_ON
+                            )
+                        }
+                        val toI = toInd + fromInd + 1
+                        g.drawLine(
+                                vPos[fromInd].x, vPos[fromInd].y,
+                                vPos[toI].x, vPos[toI].y
+                        )
+                    }
+                }
+            }
+        }
+
+        /*for (i in 0 until graph.size - 1){
             for (j in i+1 until graph.size) {
                 if (graph[i][j]>1e-20){
                     vertexPositions?.let { vp ->
@@ -71,6 +94,6 @@ class GraphPainter(
                     }
                 }
             }
-        }
+        }*/
     }
 }
