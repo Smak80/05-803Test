@@ -3,7 +3,7 @@ import kotlin.math.*
 
 class GraphPainter(
         val graph: MutableList<MutableList<Double>>
-) {
+) : Painter {
 
     private var width = 1
     private var height = 1
@@ -23,11 +23,11 @@ class GraphPainter(
             }
         }
 
-    var size: Pair<Int, Int>
-    get() = Pair(width, height)
+    override var size: Dimension
+    get() = Dimension(width, height)
     set(value){
-        width = value.first
-        height = value.second
+        width = value.width
+        height = value.height
         calcVertexPositions()
     }
 
@@ -56,7 +56,7 @@ class GraphPainter(
         }
     }
 
-    fun paint(g: Graphics){
+    override fun paint(g: Graphics){
         paintEdges(g)
         paintVerticies(g)
     }

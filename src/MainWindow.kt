@@ -1,4 +1,5 @@
 import java.awt.Color
+import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -9,13 +10,17 @@ import javax.swing.JPanel
 
 class MainWindow : JFrame(){
 
-    private val mainPanel: JPanel
-    var painter: GraphPainter? = null
+    private val mainPanel: MainPanel
+    var painter: Painter?
+        get() = mainPanel.painter
+        set(value){
+            mainPanel.painter = value
+        }
 
     init{
         defaultCloseOperation = EXIT_ON_CLOSE
-
-        mainPanel = JPanel().apply {
+        minimumSize = Dimension(600, 500)
+        mainPanel = MainPanel().apply {
             background = Color.WHITE
         }
 
@@ -23,19 +28,19 @@ class MainWindow : JFrame(){
             it.setHorizontalGroup(
                     it.createSequentialGroup()
                             .addGap(8)
-                            .addComponent(mainPanel, 600, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
+                            .addComponent(mainPanel, minimumSize.width - 60, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
                             .addGap(8)
             )
             it.setVerticalGroup(
                     it.createSequentialGroup()
                             .addGap(8)
-                            .addComponent(mainPanel, 500, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
+                            .addComponent(mainPanel, minimumSize.height - 60, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE)
                             .addGap(8)
             )
         }
         mainPanel.addComponentListener(object: ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
-                painter?.size = Pair(mainPanel.width, mainPanel.height)
+                painter?.size = mainPanel.size
             }
         })
         pack()
@@ -43,7 +48,5 @@ class MainWindow : JFrame(){
 
     override fun paint(g: Graphics?) {
         super.paint(g)
-        painter?.size = Pair(mainPanel.width, mainPanel.height)
-        painter?.paint(mainPanel.graphics)
     }
 }
