@@ -1,3 +1,5 @@
+package ru.smak.graphics
+
 import java.awt.*
 import kotlin.math.*
 

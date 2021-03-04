@@ -1,7 +1,10 @@
+package ru.smak.ui.components
+
+import ru.smak.graphics.Painter
 import java.awt.Graphics
 import javax.swing.JPanel
 
-class MainPanel(): JPanel() {
+class GraphicsPanel: JPanel() {
 
     var painter: Painter? = null
 

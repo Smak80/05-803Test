@@ -1,16 +1,18 @@
+package ru.smak.ui
+
+import ru.smak.ui.components.GraphicsPanel
+import ru.smak.graphics.Painter
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import java.awt.event.ComponentListener
 import javax.swing.GroupLayout
 import javax.swing.JFrame
-import javax.swing.JPanel
 
 class MainWindow : JFrame(){
 
-    private val mainPanel: MainPanel
+    private val mainPanel: GraphicsPanel
     var painter: Painter?
         get() = mainPanel.painter
         set(value){
@@ -20,7 +22,7 @@ class MainWindow : JFrame(){
     init{
         defaultCloseOperation = EXIT_ON_CLOSE
         minimumSize = Dimension(600, 500)
-        mainPanel = MainPanel().apply {
+        mainPanel = GraphicsPanel().apply {
             background = Color.WHITE
         }
 

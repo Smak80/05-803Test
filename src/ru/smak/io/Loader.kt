@@ -1,3 +1,5 @@
+package ru.smak.io
+
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStreamReader
@@ -12,9 +14,9 @@ object Loader {
                     FileInputStream(filename), "UTF-8"
                 )
             )
-            while (br.readLine()?.apply{
-                res.add(split(';').map { it.toDouble() }.toMutableList())
-                } != null){}
+            br.readLines().forEach{
+                res.add(it.split(';').map { it.toDouble() }.toMutableList())
+            }
         } catch (e: Exception){
             println("Ошибка при чтении из файла: ${e.message}")
         }
